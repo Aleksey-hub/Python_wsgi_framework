@@ -1,28 +1,7 @@
-def index(request):
-    print(request)
-    return '200 OK', [b'index']
-
-
-def about(request):
-    print(request)
-    return '200 OK', [b'about']
-
-
 def view_404_page(request):
     print(request)
     return '404 Not Found', [b'404 Page not found']
 
-
-routes = {
-    '/': index,
-    '/about/': about
-}
-
-def secret_front(request):
-    request['secret'] = 'secret'
-
-
-fronts = [secret_front]
 
 class Aplication:
     def __init__(self, routes, fronts):
@@ -46,6 +25,3 @@ class Aplication:
         response, page = view(request)
         start_response(response, [('Content-type', 'text/html')])
         return page
-
-
-application = Aplication(routes, fronts)
