@@ -5,14 +5,14 @@ from fwsgi.templator import render
 def index(request):
     print(request)
     # return '200 OK', [b'index']
-    response = render('templates/index.html')
+    response = render('index.html', title='Главная страница')
     return '200 OK', response.encode()
 
 
 def contacts(request):
     print(request)
     # return '200 OK', [b'about']
-    response = render('templates/contacts.html')
+    response = render('contacts.html', title='Контакты')
     return '200 OK', response.encode()
 
 
