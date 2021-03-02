@@ -14,42 +14,44 @@ class Aplication:
     def __call__(self, environ, start_response):
         request_method = environ['REQUEST_METHOD']
         path = environ['PATH_INFO']
+        request = {}
 
         if not path.endswith('/'):
             path = path + '/'
 
         if request_method == 'GET':
-            print('GET запрос')
+            request['method'] = 'GET'
+            # print('GET запрос')
             data_str = environ['QUERY_STRING']
             # декодируем urlencoded в utf-8
             data_str = urllib.parse.unquote(data_str)
             data = self.pars_data(data_str)
-            if data:
-                print(f'Сообщение от {data["email"]}\n'
-                      f'Тема: {data["theme"]}\n'
-                      f'Сообщение: {data["message"]}')
+            # if data:
+            #     print(f'Сообщение от {data["email"]}\n'
+            #           f'Тема: {data["theme"]}\n'
+            #           f'Сообщение: {data["message"]}')
         elif request_method == 'POST':
-            print('POST запрос')
+            request['method'] = 'POST'
             # Получаем данные POST-запроса в виде байт строки
             data_bytes = self.get_wsgi_input_bytes(environ)
             # декодируем в str
             data_str = data_bytes.decode(encoding='utf-8')
             # декодируем urlencoded в utf-8
             data_str = urllib.parse.unquote(data_str)
-            print(data_str)
             # преобразуем str в dict
             data = self.pars_data(data_str)
 
-            print(f'Сообщение от {data["email"]}\n'
-                  f'Тема: {data["theme"]}\n'
-                  f'Сообщение: {data["message"]}')
+            # print(f'Сообщение от {data["email"]}\n'
+            #       f'Тема: {data["theme"]}\n'
+            #       f'Сообщение: {data["message"]}')
+            # print(data)
 
         if path in self.routes:
             view = self.routes[path]
         else:
             view = view_404_page
 
-        request = {}
+        request.update(data)
         for front in self.fronts:
             front(request)
 

@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block body %}
+    <h1>Создание новой категории</h1>
+    <form method="post">
+        <input type="text" name="category" placeholder="Название категории" required><br>
+        <input type="submit" value="Создать">
+    </form>
+
+{% endblock %}

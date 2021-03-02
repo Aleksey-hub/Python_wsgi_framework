@@ -37,11 +37,17 @@ class Course:
     def add_user(self, user: User):
         self.users.append(user)
 
+    def __repr__(self):
+        return self.course_name
+
 
 class Category:
     def __init__(self, category_name):
         # Название категории
         self.category_name = category_name
+
+    def __repr__(self):
+        return self.category_name
 
 
 # Основной класс сайта
@@ -64,6 +70,11 @@ class Website:
         new_course = Course(course_name, category)
         self.courses.append(new_course)
         return new_course
+
+    def get_category_by_name(self, category_name):
+        for category in self.categories:
+            if category.category_name == category_name:
+                return category
 
 
 if __name__ == '__main__':
