@@ -1,4 +1,4 @@
-from fwsgi.fwsgi import Aplication
+from fwsgi.fwsgi import Application, ApplicationFake, ApplicationLog
 from fwsgi.templator import render
 from logger import Logger
 from models import Website, Category
@@ -11,7 +11,27 @@ site.add_courses('Python для профессионалов', categories1)
 site.add_courses('Python для начинающих', categories1)
 categories1 = site.add_categories('Java')
 
+routes = {
+    # '/': index,
+    # '/contacts/': contacts,
+    # '/new_course/': new_course,
+    # '/new_category/': new_category
+}
 
+
+def secret_front(request):
+    request['secret'] = 'secret'
+
+
+fronts = [secret_front]
+
+application = Application(routes, fronts)
+# application = ApplicationFake(routes, fronts)
+# application = ApplicationLog(routes, fronts)
+
+
+@application.add_route('/')
+@application.debug
 def index(request):
     logger.log('Загрузка главной страницы')
     # print(request)
@@ -20,6 +40,8 @@ def index(request):
     return '200 OK', response.encode()
 
 
+@application.add_route('/contacts/')
+@application.debug
 def contacts(request):
     logger.log('Загрузка страницы контактов')
     # print(request)
@@ -28,6 +50,7 @@ def contacts(request):
     return '200 OK', response.encode()
 
 
+@application.add_route('/new_course/')
 def new_course(request):
     title = 'Создание нового курса'
     logger.log(title)
@@ -47,6 +70,7 @@ def new_course(request):
     return '200 OK', response.encode()
 
 
+@application.add_route('/new_category/')
 def new_category(request):
     title = 'Создание новой категории'
     logger.log(title)
@@ -54,20 +78,3 @@ def new_category(request):
         site.add_categories(request['category'])
     response = render('new_category.html', routes=routes, title=title, site=site)
     return '200 OK', response.encode()
-
-
-routes = {
-    '/': index,
-    '/contacts/': contacts,
-    '/new_course/': new_course,
-    '/new_category/': new_category
-}
-
-
-def secret_front(request):
-    request['secret'] = 'secret'
-
-
-fronts = [secret_front]
-
-application = Aplication(routes, fronts)

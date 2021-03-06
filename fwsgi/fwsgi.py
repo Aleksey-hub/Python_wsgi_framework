@@ -1,4 +1,5 @@
 import urllib.parse
+from time import time
 
 
 def view_404_page(request):
@@ -6,7 +7,7 @@ def view_404_page(request):
     return '404 Not Found', [b'404 Page not found']
 
 
-class Aplication:
+class Application:
     def __init__(self, routes, fronts):
         self.routes = routes
         self.fronts = fronts
@@ -59,6 +60,29 @@ class Aplication:
         start_response(response, [('Content-type', 'text/html')])
         return page
 
+    @staticmethod
+    def debug(func):
+        '''Декоратор. Выводит название функции и время ее выполнения.
+        Использовать перед декоратором add_route.'''
+        def wrap(*args, **kwargs):
+            start = time()
+            result = func(*args, **kwargs)
+            end = time()
+            print(f'\nФункция {func.__name__} время выполнения: {end - start}\n')
+            return result
+
+        return wrap
+
+    def add_route(self, url):
+        '''Функция для передачи url в функцию decorator'''
+
+        def decorator(view):
+            '''Декоратор. Заменяет декорируюмую ф-цию на NoneType,
+            но сохраняет её исходную форму в routes.'''
+            self.routes[url] = view
+
+        return decorator
+
     def get_wsgi_input_bytes(self, env):
         '''Получение данных POST запроса'''
         data = env['wsgi.input'].read()
@@ -72,3 +96,16 @@ class Aplication:
                 key, val = item.split('=')
                 result[key] = val
         return result
+
+
+class ApplicationLog(Application):
+    def __call__(self, environ, start_response):
+        print('\nЛогирующий режим:')
+        print(environ)
+        return super().__call__(environ, start_response)
+
+
+class ApplicationFake(Application):
+    def __call__(self, environ, start_response):
+        start_response("200 OK", [('Content-type', 'text/html')])
+        return b"Hello from Fake"
