@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block body %}
+    <h1>{{ title|capitalize }}</h1>
+    <ul>
+        {% for student in students %}
+                <li>{{ student.name}} {{ student.last_name }}</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

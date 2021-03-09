@@ -1,3 +1,4 @@
+from wsgiref.util import setup_testing_defaults
 import urllib.parse
 from time import time
 
@@ -13,6 +14,7 @@ class Application:
         self.fronts = fronts
 
     def __call__(self, environ, start_response):
+        setup_testing_defaults(environ)
         request_method = environ['REQUEST_METHOD']
         path = environ['PATH_INFO']
         request = {}
@@ -58,12 +60,13 @@ class Application:
 
         response, page = view(request)
         start_response(response, [('Content-type', 'text/html')])
-        return page
+        return [page]
 
     @staticmethod
     def debug(func):
         '''Декоратор. Выводит название функции и время ее выполнения.
         Использовать перед декоратором add_route.'''
+
         def wrap(*args, **kwargs):
             start = time()
             result = func(*args, **kwargs)

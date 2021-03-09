@@ -1,41 +1,61 @@
+from reusepatterns.observer import Subject, Observer
+from reusepatterns.prototype import PrototypeMixin
+
+
 # фабричный метод для пользователей
-class UsersCreator():
-    @staticmethod
-    def create_user(user_type, name, last_name):
-        user_types = {
-            'student': Student,
-            'teacher': Teacher
-        }
-        return user_types[user_type](name, last_name)
-
-
 class User:
     def __init__(self, name, last_name):
         self.name = name
         self.last_name = last_name
 
 
-class Student(User):
-    pass
+class Student(User, Observer):
+    def update(self, subject):
+        print(f'SMS-> {self.name} {self.last_name}: Произошли изменения на курсе "{subject.course_name}"')
+        print(f'EMAIL-> {self.name} {self.last_name}: Произошли изменения на курсе "{subject.course_name}"')
 
 
-class Teacher(User):
-    pass
+class Teacher(User, Observer):
+    def update(self, subject):
+        print(f'SMS-> {self.name} {self.last_name}: Произошли изменения на курсе "{subject.course_name}"')
+        print(f'EMAIL-> {self.name} {self.last_name}: Произошли изменения на курсе "{subject.course_name}"')
 
 
-class Course:
+class UsersCreator:
+    user_types = {
+        'student': Student,
+        'teacher': Teacher
+    }
+
+    @classmethod
+    def create_user(cls, user_type, name, last_name):
+        return cls.user_types[user_type](name, last_name)
+
+
+class Course(PrototypeMixin, Subject):
     # Список пользователей записанных на курс
     users = []
+    # наличие преподавателя на курсе
+    teacher = False
 
     def __init__(self, course_name, category):
         # Название курса
         self.course_name = course_name
         # объект категории к которой относится курс
         self.category = category
+        super().__init__()
 
     # добавление нового пользователя на курс
     def add_user(self, user: User):
-        self.users.append(user)
+        if user not in self.users:
+            if self.teacher and isinstance(user, Teacher):
+                print('На курсе уже есть преподаватель.')
+            elif isinstance(user, Teacher):
+                self.users.append(user)
+                self.teacher = True
+            else:
+                self.users.append(user)
+            self.attach(user)
 
     def __repr__(self):
         return self.course_name
@@ -76,6 +96,16 @@ class Website:
             if category.category_name == category_name:
                 return category
 
+    def get_course_by_name(self, course_name):
+        for course in self.courses:
+            if course.course_name == course_name:
+                return course
+
+    def get_student_by_name(self, name, last_name):
+        for student in self.users:
+            if name == student.name and last_name == student.last_name:
+                return student
+
 
 if __name__ == '__main__':
     site = Website()
@@ -91,3 +121,4 @@ if __name__ == '__main__':
     course1.add_user(teacher1)
     print(teacher1)
     print(site.courses)
+    isinstance()

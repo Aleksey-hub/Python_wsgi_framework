@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block body %}
+    <h1>Создание нового пользователя</h1>
+    <form method="post">
+        <select name="user_type" required>
+            <option disabled>Тип пользователя</option>
+            {% for user_type in user_types %}
+                <option>{{ user_type }}</option>
+            {% endfor %}
+        </select><br>
+        <input type="text" value="" name="name" placeholder="Имя" required><br>
+        <input type="text" value="" name="last_name" placeholder="Фамилия" required><br>
+        <input type="submit" value="Создать">
+    </form>
+
+{% endblock %}

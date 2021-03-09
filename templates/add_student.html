@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block body %}
+    <h1>{{ title|capitalize }}</h1>
+    <form method="post">
+        <select name="student" required>
+            <option disabled>Студент</option>
+            {% for student in students %}
+                    <option>{{ student.name }} {{ student.last_name }}</option>
+            {% endfor %}
+        </select><br>
+        <select name="course" required>
+            <option disabled>Курс</option>
+            {% for course in courses %}
+                    <option>{{ course.course_name }}</option>
+            {% endfor %}
+        </select><br>
+        <input type="submit" value="Добавить">
+    </form>
+{% endblock %}
