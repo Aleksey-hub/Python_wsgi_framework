@@ -4,8 +4,8 @@
     <form method="post">
         <select name="category" required>
             <option disabled>Категория</option>
-            {% for category in site.categories %}
-                <option {% if category == category_copy %}selected{% endif %}>{{ category }}</option>
+            {% for category in categories %}
+                <option value="{{ category.id }}" {% if category == category_copy %}selected{% endif %}>{{ category }}</option>
             {% endfor %}
         </select><br>
         <input type="text" value="{{ name_copy }}" name="course_name" placeholder="Название курса" required><br>

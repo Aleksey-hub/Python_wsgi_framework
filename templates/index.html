@@ -2,14 +2,14 @@
 {% block body %}
     <h1>Главная</h1>
     <h2>Курсы</h2>
-    {% if site.categories %}
-        {% for category in site.categories %}
+    {% if categories %}
+        {% for category in categories %}
             <h4>{{ category }}</h4>
             <ul>
-                {% for course in site.courses if course.category == category %}
+                {% for course in courses if course.category_id == category.id %}
                     <li><a href="/">{{ course }}</a>
-                        <a href="copy_course?name_copy={{ course }}&category_copy={{ category }}" >(скопировать)</a>
-                        <a href="edit_course?course_name={{ course }}&category={{ category }}" >(изменить)</a></li>
+                        <a href="copy_course?name_copy={{ course.id }}" >(скопировать)</a>
+                        <a href="edit_course?course_id={{ course.id }}" >(изменить)</a></li>
                     </li>
                 {% else %}
                     <li>Курсы в данной категории отсутствуют</li>

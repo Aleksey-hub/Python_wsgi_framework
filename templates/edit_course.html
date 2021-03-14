@@ -1,16 +1,18 @@
 {% extends 'base.html' %}
 {% block body %}
-    <h1>Изменение курса</h1>
-    <form method="post">
-        <select name="category" required>
-            <option disabled>Категория</option>
-            {% for category_ in site.categories %}
-                <option {% if category_ == category %}selected{% endif %}>{{ category_ }}</option>
-            {% endfor %}
-        </select><br>
-        <input type="text" value="{{ course_name }}" name="new_course_name" placeholder="Название курса" required><br>
-        <input type="hidden" value="{{ course_name }}" name="old_course_name"><br>
-        <input type="submit" value="Сохранить">
-    </form>
+<h1>Изменение курса</h1>
+<form method="post">
+    <select name="category_id" required>
+        <option disabled>Категория</option>
+        {% for category in categories %}
+            <option value="{{ category.id }}" {% if course.category_id == category.id %}selected{% endif %}>{{ category }}
+            </option>
+        {% endfor %}
+    </select><br>
+    <input type="text" value="{{ course.course_name }}" name="new_course_name" placeholder="Название курса"
+           required><br>
+    <input type="hidden" value="{{ course.id }}" name="course_id"><br>
+    <input type="submit" value="Сохранить">
+</form>
 
 {% endblock %}

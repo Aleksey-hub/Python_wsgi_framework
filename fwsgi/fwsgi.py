@@ -5,7 +5,7 @@ from time import time
 
 def view_404_page(request):
     print(request)
-    return '404 Not Found', [b'404 Page not found']
+    return '404 Not Found', b'404 Page not found'
 
 
 class Application:
