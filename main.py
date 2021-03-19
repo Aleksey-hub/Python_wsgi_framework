@@ -1,3 +1,4 @@
+from re import fullmatch
 from wsgiref.simple_server import make_server
 from fwsgi.fwsgi import Application, ApplicationFake, ApplicationLog
 from fwsgi.templator import render
@@ -94,9 +95,14 @@ def new_user(request):
 
     if request['method'] == 'POST':
         # site.add_user(request['user_type'], request['first_name'], request['last_name'])
-        student = Student(request['first_name'], request['last_name'])
-        mapper = MapperRegistry.get_current_mapper('student')
-        mapper.insert(student)
+        # валидация имени и фамилии
+        if fullmatch(r'[a-zA-Zа-яА-ЯёЁ-]{2,}', request['first_name']) \
+                and fullmatch(r'[a-zA-Zа-яА-ЯёЁ-]{2,}', request['last_name']):
+            student = Student(request['first_name'], request['last_name'])
+            mapper = MapperRegistry.get_current_mapper('student')
+            mapper.insert(student)
+        else:
+            print('Неверные имя и/или фамилия.')
 
     response = render('new_user.html', routes=routes, title=title, site=site, user_types=UsersCreator.user_types)
     return '200 OK', response.encode()
@@ -179,7 +185,7 @@ def copy_course(request):
 def edit_course(request):
     title = 'Изменение курса'
     logger.log(title)
-    print(request)
+    # print(request)
 
     # new_category = ''
     # course = None
@@ -196,8 +202,12 @@ def edit_course(request):
         course.category_id = request['category_id']
         mapper_course.update(course)
         course.notify()
+        # список курсов для страницы index.html
+        mapper_course = MapperRegistry.get_current_mapper('course')
+        courses = mapper_course.find_all()
 
-        response = render('index.html', routes=routes, title=title, site=site)
+        response = render('index.html', routes=routes, title='Главная страница', courses=courses, categories=categories)
+        return '302 Moved Temporarily', response.encode()
     # копирование данных выбранного для изменения курса:
     if request['method'] == 'GET':
         response = render('edit_course.html', routes=routes, title=title, course=course, categories=categories)
@@ -210,7 +220,7 @@ def new_category(request):
     title = 'Создание новой категории'
     logger.log(title)
     if request['method'] == 'POST':
-        print(request)
+        # print(request)
         # site.add_categories(request['category'])
         mapper = MapperRegistry.get_current_mapper('category')
         category = Category(request['category'])
@@ -219,6 +229,6 @@ def new_category(request):
     return '200 OK', response.encode()
 
 
-with make_server('', 8000, application) as httpd:
+with make_server('127.0.0.1', 8000, application) as httpd:
     print("Serving on port 8000...")
     httpd.serve_forever()
